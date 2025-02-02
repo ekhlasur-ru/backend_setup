@@ -4,6 +4,7 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
+import noticeRoute from "./controllers/Notice.js";
 
 // Load environment variables from .env file
 dotenv.config({
@@ -16,6 +17,8 @@ const app = express();
 //database Connection
 connectDB();
 
+// Serve static files from the public directory
+app.use(express.static("public"));
 // middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -24,21 +27,17 @@ app.use(cookieParser());
 app.use(morgan("dev"));
 app.use(
   cors({
-    origin: process.env.ORIGIN || "*", // Allow all origins if CORS_ORIGIN is not set
-    credentials: true, // Allow credentials (cookies, authorization headers, etc.)
-    exposedHeaders: ["X-Total-Count", "Authorization"], // Expose additional headers
-    methods: ["GET", "POST", "PATCH", "DELETE", "PUT", "OPTIONS"], // Include more HTTP methods
-    allowedHeaders: [
-      "Content-Type",
-      "Authorization",
-      "X-Requested-With",
-      "Accept",
-    ],
+    origin: "http://localhost:5008",
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    credentials: true,
+    optionsSuccessStatus: 204,
+    allowedHeaders: ["Content-Type", "Authorization"],
+    exposedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
 //routes declaration For REST API
-// app.use("/users", userRouter);
+app.use("/notice", noticeRoute);
 
 //express backend route
 app.get("/", (req, res) => {
